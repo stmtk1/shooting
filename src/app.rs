@@ -10,7 +10,7 @@ use graphics::context::Context;
 use piston::event_loop::*;
 use piston::input::*;
 use enemy::Enemy;
-use bullet::Bullet;
+use bullet::{EnemyBullet, MyBullet};
 use my_combat::MyCombat;
 //use rand::prelude::*;
 
@@ -19,7 +19,8 @@ pub struct App {
     gl: GlGraphics,
     window: Window,
     enemies: Vec<Enemy>,
-    bullets: Vec<Bullet>,
+    enemy_bullets: Vec<EnemyBullet>,
+    my_bullets: Vec<MyBullet>,
     my_combat: MyCombat,
 }
 
@@ -31,7 +32,8 @@ impl App {
             gl: GlGraphics::new(opengl),
             window: window,
             enemies: Vec::with_capacity(100),
-            bullets: Vec::with_capacity(100),
+            enemy_bullets: Vec::with_capacity(100),
+            my_bullets: Vec::with_capacity(100),
             my_combat: MyCombat::new(),
         }
     }
@@ -58,6 +60,10 @@ impl App {
             if let Some(_) = e.update_args() {
                 self.update();
             }
+            
+            if let Some(Button::Keyboard(key)) = e.press_args() {
+                self.my_combat = self.my_combat.apply_key(key);
+            }
         }
     }
     
@@ -68,14 +74,16 @@ impl App {
 
         //const TRIANGLE:   &[[f32; 2]; 3] = &[[1.0, 0.0], [0.0, 1.732], [2.0, 1.732]];
         let enemies = self.enemies.clone();
-        let bullets = self.bullets.clone();
+        let enemy_bullets = self.enemy_bullets.clone();
+        let my_bullets = self.my_bullets.clone();
         let my_combat = self.my_combat.clone();
 
         self.gl.draw(args.viewport(), |c, gl|{
             clear(WHITE, gl);
             
             App::draw_enemies(&c, gl, &enemies, enemy_square);
-            App::draw_bullets(&c, gl, &bullets, bullet_square);
+            App::draw_enemy_bullets(&c, gl, &enemy_bullets, bullet_square);
+            App::draw_my_bullets(&c, gl, &my_bullets, bullet_square);
             App::draw_my_combat(&c, gl, &my_combat, my_combat_square);
         });
     }
@@ -96,7 +104,7 @@ impl App {
         //polygon(RED, &TRIANGLE, transform, gl);
     }
     
-    fn draw_bullets(c: &Context, gl: &mut GlGraphics, bullets: &Vec<Bullet>, square: graphics::types::Rectangle) {
+    fn draw_enemy_bullets(c: &Context, gl: &mut GlGraphics, bullets: &Vec<EnemyBullet>, square: graphics::types::Rectangle) {
         for bullet in bullets {
             let transform = c.transform
                 .trans(bullet.position.x, bullet.position.y);
@@ -105,8 +113,18 @@ impl App {
         }
     }
     
+    fn draw_my_bullets(c: &Context, gl: &mut GlGraphics, bullets: &Vec<MyBullet>, square: graphics::types::Rectangle) {
+        for bullet in bullets {
+            let transform = c.transform
+                .trans(bullet.position.x, bullet.position.y);
+            rectangle(RED, square, transform, gl);
+            //polygon(RED, &TRIANGLE, transform, gl);
+        }
+    }
+    
     pub fn update(&mut self){
-        self.bullets = Bullet::update_all(&self.bullets, &self.enemies);
+        self.enemy_bullets = EnemyBullet::update_all(&self.enemy_bullets, &self.enemies);
+        self.my_bullets = MyBullet::update_all(&self.my_bullets, &self.my_combat);
         self.enemies = Enemy::update_all(&self.enemies);
         self.my_combat = self.my_combat.update();
     }

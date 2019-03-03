@@ -1,7 +1,7 @@
 use rand::prelude::*;
 use pvector::PVector;
 use consts::*;
-use bullet::Bullet;
+use bullet::{EnemyBullet, MyBullet};
 
 #[derive(Clone)]
 pub struct Enemy {
@@ -43,11 +43,11 @@ impl Enemy {
         ret
     }
     
-    pub fn shoot(enemies: &Vec<Enemy>) -> Vec<Bullet> {
-        let ret: Vec<Bullet> =  enemies
+    pub fn shoot(enemies: &Vec<Enemy>) -> Vec<EnemyBullet> {
+        let ret: Vec<EnemyBullet> =  enemies
             .into_iter()
             .filter(|enemy| enemy.bullet_interval >= BULLET_INTERVAL_MAX)
-            .map(|enemy| Bullet::new(&(enemy.bullet_pos())))
+            .map(|enemy| EnemyBullet::new(&enemy.bullet_pos()))
             .collect();
         ret
     }
