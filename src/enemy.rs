@@ -19,7 +19,7 @@ impl Enemy {
         Enemy{
             position: position,
             velocity: velocity,
-            bullet_interval: rng.gen::<u64>() % BULLET_INTERVAL_MAX,
+            bullet_interval: rng.gen::<u64>() % ENEMY_BULLET_INTERVAL_MAX,
         }
     }
     
@@ -28,7 +28,7 @@ impl Enemy {
             .into_iter()
             .map(|enemy| enemy.update())
             .collect();
-        Enemy::create_enemy(&ret)
+        Self::manage(&ret)
     }
     
     pub fn update(&self)  -> Enemy {
@@ -46,7 +46,7 @@ impl Enemy {
     pub fn shoot(enemies: &Vec<Enemy>) -> Vec<EnemyBullet> {
         let ret: Vec<EnemyBullet> =  enemies
             .into_iter()
-            .filter(|enemy| enemy.bullet_interval >= BULLET_INTERVAL_MAX)
+            .filter(|enemy| enemy.bullet_interval >= ENEMY_BULLET_INTERVAL_MAX)
             .map(|enemy| EnemyBullet::new(&enemy.bullet_pos()))
             .collect();
         ret
@@ -56,7 +56,7 @@ impl Enemy {
     }
     pub fn interval_update(&self) -> Enemy {
         let mut ret = self.clone();
-        if ret.bullet_interval >= BULLET_INTERVAL_MAX {
+        if ret.bullet_interval >= ENEMY_BULLET_INTERVAL_MAX {
             ret.bullet_interval = 0;
         }else{
             ret.bullet_interval += 1;
@@ -71,5 +71,26 @@ impl Enemy {
             ret.push(Enemy::new());
         }
         ret
+    }
+    
+    fn remove_not_use(enemies: &Vec<Self>) -> Vec<Self> {
+        enemies
+            .into_iter()
+            .filter(|enemy| enemy.is_in_screen())
+            .map(|enemy| enemy.clone())
+            .collect()
+    }
+    
+    fn is_in_screen(&self) -> bool {
+        self.position.y < self.size() + HEIGHT
+    }
+    
+    fn size(&self) -> f64 {
+        ENEMY_SIZE
+    }
+    
+    fn manage(enemies: &Vec<Self>) -> Vec<Self> {
+        let ret = Self::create_enemy(enemies);
+        Self::remove_not_use(&ret)
     }
 }

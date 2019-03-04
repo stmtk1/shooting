@@ -19,7 +19,7 @@ impl MyCombat {
         MyCombat {
             position: position,
             velocity: velocity,
-            bullet_interval: BULLET_INTERVAL_MAX - 1,
+            bullet_interval: MY_BULLET_INTERVAL_MAX - 1,
         }
     }
     
@@ -47,7 +47,7 @@ impl MyCombat {
     
     pub fn interval_update(&self) -> Self {
         let mut ret = self.clone();
-        if ret.bullet_interval >= BULLET_INTERVAL_MAX {
+        if ret.bullet_interval >= MY_BULLET_INTERVAL_MAX {
             ret.bullet_interval = 0;
         }else{
             ret.bullet_interval += 1;
@@ -56,7 +56,7 @@ impl MyCombat {
     }
     
     pub fn shoot(&self) ->  Option<MyBullet> {
-        if self.bullet_interval >= BULLET_INTERVAL_MAX {
+        if self.bullet_interval >= MY_BULLET_INTERVAL_MAX {
             Some(MyBullet::new(&self.bullet_pos()))
         }else{
             None

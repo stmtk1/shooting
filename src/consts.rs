@@ -1,6 +1,7 @@
 pub const WIDTH: f64 = 640.0;
 pub const HEIGHT: f64 = 480.0;
-pub const BULLET_INTERVAL_MAX: u64 = 100;
+pub const ENEMY_BULLET_INTERVAL_MAX: u64 = 100;
+pub const MY_BULLET_INTERVAL_MAX: u64 = 10;
 pub const WHITE: [f32; 4] = [1.0; 4];
 pub const RED:   [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 pub const BLUE:   [f32; 4] = [0.0, 0.0, 1.0, 1.0];
