@@ -1,27 +1,10 @@
 use rand::prelude::*;
 use pvector::PVector;
 use consts::*;
-use bullet::{EnemyBullet, MyBullet};
-
-#[derive(Clone)]
-pub struct Enemy {
-    pub position: PVector,
-    velocity: PVector,
-    bullet_interval: u64,
-}
+use bullet::{EnemyBullet, Bullet};
+use plane::{Enemy, Plane};
 
 impl Enemy {
-    pub fn new() -> Enemy {
-        let mut rng = rand::thread_rng();
-        let position = PVector::new(rng.gen::<f64>() * WIDTH, 0.0);
-        let velocity = PVector::new(0.0, 1.0);
-        
-        Enemy{
-            position: position,
-            velocity: velocity,
-            bullet_interval: rng.gen::<u64>() % ENEMY_BULLET_INTERVAL_MAX,
-        }
-    }
     
     pub fn update_all(enemies: &Vec<Enemy>) -> Vec<Enemy> {
         let ret = enemies
@@ -37,32 +20,16 @@ impl Enemy {
             .interval_update()
     }
     
-    pub fn move_self(&self) -> Enemy {
-        let mut ret = self.clone();
-        ret.position = self.position.add(&ret.velocity);
-        ret
-    }
     
     pub fn shoot(enemies: &Vec<Enemy>) -> Vec<EnemyBullet> {
         let ret: Vec<EnemyBullet> =  enemies
             .into_iter()
             .filter(|enemy| enemy.bullet_interval >= ENEMY_BULLET_INTERVAL_MAX)
-            .map(|enemy| EnemyBullet::new(&enemy.bullet_pos()))
+            .map(|enemy| <EnemyBullet as Bullet>::new(&super::bullet_pos(enemy)))
             .collect();
         ret
     }
-    pub fn bullet_pos(&self) -> PVector{
-        self.position.add(&PVector::new((ENEMY_SIZE - BULLET_SIZE).abs() / 2.0, 0.0))
-    }
-    pub fn interval_update(&self) -> Enemy {
-        let mut ret = self.clone();
-        if ret.bullet_interval >= ENEMY_BULLET_INTERVAL_MAX {
-            ret.bullet_interval = 0;
-        }else{
-            ret.bullet_interval += 1;
-        }
-        ret
-    }
+    
     
     fn create_enemy(enemies: &Vec<Enemy>) -> Vec<Enemy> {
         let mut ret = enemies.clone();
@@ -85,12 +52,50 @@ impl Enemy {
         self.position.y < self.size() + HEIGHT
     }
     
+    fn manage(enemies: &Vec<Self>) -> Vec<Self> {
+        let ret = Self::create_enemy(enemies);
+        Self::remove_not_use(&ret)
+    }
+    
+    fn move_self(&self) -> Enemy {
+        let mut ret = self.clone();
+        ret.position = self.position.add(&ret.velocity);
+        ret
+    }
+}
+
+impl Plane for Enemy {
+    fn new() -> Enemy {
+        let mut rng = rand::thread_rng();
+        let position = PVector::new(rng.gen::<f64>() * WIDTH, 0.0);
+        let velocity = PVector::new(0.0, 1.0);
+        
+        Enemy{
+            position: position,
+            velocity: velocity,
+            bullet_interval: rng.gen::<u64>() % ENEMY_BULLET_INTERVAL_MAX,
+        }
+    }
+    
     fn size(&self) -> f64 {
         ENEMY_SIZE
     }
     
-    fn manage(enemies: &Vec<Self>) -> Vec<Self> {
-        let ret = Self::create_enemy(enemies);
-        Self::remove_not_use(&ret)
+    fn bullet_size(&self) -> f64 {
+        BULLET_SIZE
+    }
+    
+    fn position(&self) -> PVector{
+        self.position.clone()
+    }
+    
+    fn interval_update(&self) -> Enemy {
+        let mut ret = self.clone();
+        if ret.bullet_interval >= ENEMY_BULLET_INTERVAL_MAX {
+            ret.bullet_interval = 0;
+        }else{
+            ret.bullet_interval += 1;
+        }
+        ret
     }
 }

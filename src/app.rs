@@ -9,9 +9,8 @@ use graphics::Transformed;
 use graphics::context::Context;
 use piston::event_loop::*;
 use piston::input::*;
-use enemy::Enemy;
 use bullet::{EnemyBullet, MyBullet};
-use my_combat::MyCombat;
+use plane::{MyPlane, Enemy, Plane};
 //use rand::prelude::*;
 
 // #[derive(Clone)]
@@ -21,7 +20,7 @@ pub struct App {
     enemies: Vec<Enemy>,
     enemy_bullets: Vec<EnemyBullet>,
     my_bullets: Vec<MyBullet>,
-    my_combat: MyCombat,
+    my_combat: MyPlane,
 }
 
 impl App {
@@ -34,7 +33,7 @@ impl App {
             enemies: Vec::with_capacity(100),
             enemy_bullets: Vec::with_capacity(100),
             my_bullets: Vec::with_capacity(100),
-            my_combat: MyCombat::new(),
+            my_combat: <MyPlane as Plane>::new(),
         }
     }
     
@@ -97,7 +96,7 @@ impl App {
         }
     }
     
-    fn draw_my_combat(c: &Context, gl: &mut GlGraphics, mine: &MyCombat, square: graphics::types::Rectangle) {
+    fn draw_my_combat(c: &Context, gl: &mut GlGraphics, mine: &MyPlane, square: graphics::types::Rectangle) {
         let transform = c.transform
             .trans(mine.position.x, mine.position.y);
         rectangle(BLACK, square, transform, gl);

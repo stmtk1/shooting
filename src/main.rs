@@ -6,10 +6,11 @@ extern crate graphics;
 
 mod app;
 mod consts;
-mod enemy;
+//mod enemy;
 mod pvector;
 mod bullet;
-mod my_combat;
+//mod my_combat;
+mod plane;
 
 use app::App;
 
