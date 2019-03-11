@@ -9,3 +9,4 @@ pub const BLACK:   [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 pub const ENEMY_SIZE: f64 = 20.0;
 pub const BULLET_SIZE: f64 = 5.0;
 pub const MY_COMBAT_SIZE: f64 = 20.0;
+pub const ENEMY_LIFE_MAX: u32 = 19;

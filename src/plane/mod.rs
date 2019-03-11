@@ -17,6 +17,7 @@ pub struct Enemy {
     pub position: PVector,
     velocity: PVector,
     bullet_interval: u64,
+    life: u32,
 }
 
 pub trait Plane{

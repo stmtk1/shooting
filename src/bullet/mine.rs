@@ -1,5 +1,5 @@
 use pvector::PVector;
-use plane::MyPlane;
+use plane::{MyPlane, Enemy, Plane};
 use consts::*;
 use bullet::{MyBullet, Bullet};
 
@@ -23,6 +23,13 @@ impl MyBullet {
             .map(|bullet| bullet.update())
             .collect();
         Self::manage(&ret, mine)
+    }
+    
+    pub fn is_attack(&self, enemy: &Enemy) -> bool {
+        enemy.position.x < self.position.x &&
+        self.position.x + self.size() < enemy.position.x + enemy.size() &&
+        enemy.position.y < self.position.y &&
+        self.position.y + self.size() < enemy.position.y + enemy.size()
     }
 }
 

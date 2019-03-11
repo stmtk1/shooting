@@ -124,7 +124,7 @@ impl App {
     pub fn update(&mut self){
         self.enemy_bullets = EnemyBullet::update_all(&self.enemy_bullets, &self.enemies);
         self.my_bullets = MyBullet::update_all(&self.my_bullets, &self.my_combat);
-        self.enemies = Enemy::update_all(&self.enemies);
+        self.enemies = Enemy::update_all(&self.enemies, &self.my_bullets);
         self.my_combat = self.my_combat.update();
     }
 }

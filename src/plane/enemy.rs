@@ -1,17 +1,39 @@
 use rand::prelude::*;
 use pvector::PVector;
 use consts::*;
-use bullet::{EnemyBullet, Bullet};
+use bullet::{EnemyBullet, Bullet, MyBullet};
 use plane::{Enemy, Plane};
 
 impl Enemy {
-    
-    pub fn update_all(enemies: &Vec<Enemy>) -> Vec<Enemy> {
+    pub fn update_all(enemies: &Vec<Enemy>, bullets: &Vec<MyBullet>) -> Vec<Enemy> {
         let ret = enemies
             .into_iter()
             .map(|enemy| enemy.update())
             .collect();
-        Self::manage(&ret)
+        Self::manage(&ret, bullets)
+    }
+    
+    fn attacked(&self, bullets: &Vec<MyBullet>) -> Self {
+        let dec_life = bullets
+            .into_iter()
+            .any(|bullet| bullet.is_attack(self));
+        let mut ret = self.clone();
+        if dec_life {
+            ret.life -= 1;
+        }
+        ret
+    }
+    
+    fn is_dead(&self) -> bool {
+        self.life <= 0
+    }
+    
+    fn remove_dead(enemies: &Vec<Enemy>, bullets: &Vec<MyBullet>) -> Vec<Enemy>{
+        enemies
+            .into_iter()
+            .filter(|enemy| !enemy.is_dead())
+            .map(|enemy| enemy.attacked(bullets))
+            .collect()
     }
     
     pub fn update(&self)  -> Enemy {
@@ -19,7 +41,6 @@ impl Enemy {
             .move_self()
             .interval_update()
     }
-    
     
     pub fn shoot(enemies: &Vec<Enemy>) -> Vec<EnemyBullet> {
         let ret: Vec<EnemyBullet> =  enemies
@@ -30,7 +51,6 @@ impl Enemy {
         ret
     }
     
-    
     fn create_enemy(enemies: &Vec<Enemy>) -> Vec<Enemy> {
         let mut ret = enemies.clone();
         let mut rng = rand::thread_rng();
@@ -40,21 +60,22 @@ impl Enemy {
         ret
     }
     
-    fn remove_not_use(enemies: &Vec<Self>) -> Vec<Self> {
-        enemies
+    fn remove_not_use(enemies: &Vec<Self>, bullets: &Vec<MyBullet>) -> Vec<Self> {
+        let ret = enemies
             .into_iter()
             .filter(|enemy| enemy.is_in_screen())
             .map(|enemy| enemy.clone())
-            .collect()
+            .collect();
+        Enemy::remove_dead(&ret, bullets)
     }
     
     fn is_in_screen(&self) -> bool {
         self.position.y < self.size() + HEIGHT
     }
     
-    fn manage(enemies: &Vec<Self>) -> Vec<Self> {
+    fn manage(enemies: &Vec<Self>, bullets :&Vec<MyBullet>) -> Vec<Self> {
         let ret = Self::create_enemy(enemies);
-        Self::remove_not_use(&ret)
+        Self::remove_not_use(&ret, bullets)
     }
     
     fn move_self(&self) -> Enemy {
@@ -74,6 +95,7 @@ impl Plane for Enemy {
             position: position,
             velocity: velocity,
             bullet_interval: rng.gen::<u64>() % ENEMY_BULLET_INTERVAL_MAX,
+            life: ENEMY_LIFE_MAX,
         }
     }
     
