@@ -2,13 +2,13 @@
 use pvector::PVector;
 use consts::*;
 use piston::input::Key;
-use bullet::{MyBullet, Bullet};
+use bullet::{MyBullet, Bullet, EnemyBullet};
 use plane::{MyPlane, Plane};
 
 impl MyPlane {
-    pub fn update(&self)  -> MyPlane {
+    pub fn update(&self, bullets: &Vec<EnemyBullet>)  -> MyPlane {
         self
-            .clone()
+            .attacked(bullets)
             .interval_update()
     }
     
@@ -28,6 +28,16 @@ impl MyPlane {
         ret
     }
     
+    fn attacked(&self, bullets: &Vec<EnemyBullet>) -> Self {
+        let dec_life = bullets
+            .into_iter()
+            .any(|bullet| bullet.is_attack(self));
+        let mut ret = self.clone();
+        if dec_life {
+            ret.life -= 1;
+        }
+        ret
+    }
     
     pub fn shoot(&self) ->  Option<MyBullet> {
         if self.bullet_interval >= MY_BULLET_INTERVAL_MAX {
@@ -36,7 +46,6 @@ impl MyPlane {
             None
         }
     }
-    
 }
 
 impl Plane for MyPlane {
@@ -47,6 +56,7 @@ impl Plane for MyPlane {
             position: position,
             velocity: velocity,
             bullet_interval: MY_BULLET_INTERVAL_MAX - 1,
+            life: MY_LIFE_MAX,
         }
     }
     

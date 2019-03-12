@@ -6,13 +6,13 @@ use consts::*;
 
 #[derive(Clone)]
 pub struct EnemyBullet {
-    pub position: PVector,
+    position: PVector,
     velocity: PVector,
 }
 
 #[derive(Clone)]
 pub struct MyBullet {
-    pub position: PVector,
+    position: PVector,
     velocity: PVector,
 }
 

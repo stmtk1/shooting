@@ -26,10 +26,10 @@ impl MyBullet {
     }
     
     pub fn is_attack(&self, enemy: &Enemy) -> bool {
-        enemy.position.x < self.position.x &&
-        self.position.x + self.size() < enemy.position.x + enemy.size() &&
-        enemy.position.y < self.position.y &&
-        self.position.y + self.size() < enemy.position.y + enemy.size()
+        enemy.position().x < self.position().x &&
+        self.position().x + self.size() < enemy.position().x + enemy.size() &&
+        enemy.position().y < self.position().y &&
+        self.position().y + self.size() < enemy.position().y + enemy.size()
     }
 }
 

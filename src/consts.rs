@@ -10,3 +10,4 @@ pub const ENEMY_SIZE: f64 = 20.0;
 pub const BULLET_SIZE: f64 = 5.0;
 pub const MY_COMBAT_SIZE: f64 = 20.0;
 pub const ENEMY_LIFE_MAX: u32 = 19;
+pub const MY_LIFE_MAX: u32 = 19;

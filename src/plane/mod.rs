@@ -7,14 +7,15 @@ use pvector::PVector;
 
 #[derive(Clone)]
 pub struct MyPlane {
-    pub position: PVector,
+    position: PVector,
     velocity: PVector,
     bullet_interval: u64,
+    life: u32,
 }
 
 #[derive(Clone)]
 pub struct Enemy {
-    pub position: PVector,
+    position: PVector,
     velocity: PVector,
     bullet_interval: u64,
     life: u32,

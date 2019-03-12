@@ -9,7 +9,7 @@ use graphics::Transformed;
 use graphics::context::Context;
 use piston::event_loop::*;
 use piston::input::*;
-use bullet::{EnemyBullet, MyBullet};
+use bullet::{EnemyBullet, MyBullet, Bullet};
 use plane::{MyPlane, Enemy, Plane};
 //use rand::prelude::*;
 
@@ -90,7 +90,7 @@ impl App {
     fn draw_enemies(c: &Context, gl: &mut GlGraphics, enemies: &Vec<Enemy>, square: graphics::types::Rectangle) {
         for enemy in enemies {
             let transform = c.transform
-                .trans(enemy.position.x, enemy.position.y);
+                .trans(enemy.position().x, enemy.position().y);
             rectangle(RED, square, transform, gl);
             //polygon(RED, &TRIANGLE, transform, gl);
         }
@@ -98,7 +98,7 @@ impl App {
     
     fn draw_my_combat(c: &Context, gl: &mut GlGraphics, mine: &MyPlane, square: graphics::types::Rectangle) {
         let transform = c.transform
-            .trans(mine.position.x, mine.position.y);
+            .trans(mine.position().x, mine.position().y);
         rectangle(BLACK, square, transform, gl);
         //polygon(RED, &TRIANGLE, transform, gl);
     }
@@ -106,7 +106,7 @@ impl App {
     fn draw_enemy_bullets(c: &Context, gl: &mut GlGraphics, bullets: &Vec<EnemyBullet>, square: graphics::types::Rectangle) {
         for bullet in bullets {
             let transform = c.transform
-                .trans(bullet.position.x, bullet.position.y);
+                .trans(bullet.position().x, bullet.position().y);
             rectangle(BLUE, square, transform, gl);
             //polygon(RED, &TRIANGLE, transform, gl);
         }
@@ -115,7 +115,7 @@ impl App {
     fn draw_my_bullets(c: &Context, gl: &mut GlGraphics, bullets: &Vec<MyBullet>, square: graphics::types::Rectangle) {
         for bullet in bullets {
             let transform = c.transform
-                .trans(bullet.position.x, bullet.position.y);
+                .trans(bullet.position().x, bullet.position().y);
             rectangle(RED, square, transform, gl);
             //polygon(RED, &TRIANGLE, transform, gl);
         }
@@ -125,6 +125,6 @@ impl App {
         self.enemy_bullets = EnemyBullet::update_all(&self.enemy_bullets, &self.enemies);
         self.my_bullets = MyBullet::update_all(&self.my_bullets, &self.my_combat);
         self.enemies = Enemy::update_all(&self.enemies, &self.my_bullets);
-        self.my_combat = self.my_combat.update();
+        self.my_combat = self.my_combat.update(&self.enemy_bullets);
     }
 }

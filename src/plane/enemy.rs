@@ -2,7 +2,7 @@ use rand::prelude::*;
 use pvector::PVector;
 use consts::*;
 use bullet::{EnemyBullet, Bullet, MyBullet};
-use plane::{Enemy, Plane};
+use plane::{Enemy, Plane, MyPlane};
 
 impl Enemy {
     pub fn update_all(enemies: &Vec<Enemy>, bullets: &Vec<MyBullet>) -> Vec<Enemy> {
